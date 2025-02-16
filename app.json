@@ -1,28 +1,56 @@
 {
   "expo": {
-    "name": "KitchenApp",
-    "slug": "KitchenApp",
+    "name": "kitchenapp",
+    "slug": "kitchenapp",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
+    "description": "A family-friendly app to help with meal planning and grocery shopping",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Denne appen trenger tilgang til kameraet for å skanne strekkoder.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.espenhenriksen.kitchenapp"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.espenhenriksen.kitchenapp",
+      "permissions": [
+        "CAMERA",
+        "android.permission.CAMERA"
+      ]
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_ERROR_RECOVERY"
+    },
+    "notification": {
+      "icon": "./assets/icon.png",
+      "color": "#000000"
+    },
+    "plugins": [
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermission": "Denne appen trenger tilgang til kameraet for å skanne strekkoder."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b713984c-0809-4491-84f9-65a0299328f8"
+      }
     }
   }
 }
