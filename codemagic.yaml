@@ -3,8 +3,9 @@ workflows:
     name: iOS Workflow
     max_build_duration: 60
     trigger:
-      - push
-      - pull_request
+      events:
+        - push
+        - pull_request
     build:
       ios:
         app_bundle_id: com.example.kitchenapp # Sett inn ditt faktiske app bundle ID
