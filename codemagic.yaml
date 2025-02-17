@@ -1,14 +1,17 @@
 workflows:
-  ios:
+  ios-workflow:
     name: iOS Workflow
     max_build_duration: 60
+    trigger:
+      branches:
+        only:
+          - main  # Bygg kun på push til main-grenen (endre etter behov)
     build:
       ios:
         app_id: 1:959701393192:ios:b9c497d2a3898195acba1d  # Sett inn appens faktiske ID
         development_team: YOUR_TEAM_ID  # Sett inn ditt team ID
         provisioning_profile: "path/to/profile"  # Valgfritt, hvis du bruker en spesifikk provisioning profile
         distribution_certificate: "path/to/certificate"  # Valgfritt, hvis du har et spesifikt sertifikat
-
     publish:
       app_store:
-        api_key: $APP_STORE_API_KEY  # Sørg for at API-nøkkelen er lagt til som en miljøvariabel i Codemagic
+        api_key: $APP_STORE_API_KEY  # Sørg for at API-nøkkelen er riktig
