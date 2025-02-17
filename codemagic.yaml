@@ -6,7 +6,9 @@ workflows:
     environment:
       vars:
         APP_STORE_API_KEY: $APP_STORE_API_KEY  # Sørg for at denne er satt i Codemagic miljøvariabler
-      xcode: latest  # Bruk siste versjon av Xcode, eller spesifiser f.eks. "14.2"
+        APP_STORE_KEY_ID: $APP_STORE_KEY_ID  # Key ID fra App Store Connect
+        APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID  # Issuer ID fra App Store Connect
+      xcode: latest  # Bruk siste versjon av Xcode
 
     triggering:
       events:
@@ -46,4 +48,6 @@ workflows:
 
     publishing:
       app_store_connect:
-        api_key: $APP_STORE_API_KEY  # Sørg for at API-nøkkelen er riktig konfigurert i Codemagic
+        api_key: $APP_STORE_API_KEY
+        key_id: $APP_STORE_KEY_ID
+        issuer_id: $APP_STORE_ISSUER_ID
