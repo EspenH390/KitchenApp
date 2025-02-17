@@ -5,10 +5,10 @@ workflows:
 
     environment:
       vars:
-        APP_STORE_API_KEY: $APP_STORE_API_KEY  # Sørg for at denne er satt i Codemagic miljøvariabler
-        APP_STORE_KEY_ID: $APP_STORE_KEY_ID  # Key ID fra App Store Connect
-        APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID  # Issuer ID fra App Store Connect
-      xcode: latest  # Bruk siste versjon av Xcode
+        APP_STORE_API_KEY: $APP_STORE_API_KEY
+        APP_STORE_KEY_ID: $APP_STORE_KEY_ID
+        APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID
+      xcode: latest  
 
     triggering:
       events:
@@ -20,15 +20,19 @@ workflows:
           source: true
 
     scripts:
-      - name: Install dependencies
+      - name: Install CocoaPods dependencies
         script: |
-          brew install cocoapods
+          sudo gem install cocoapods
+          cd ios
+          if [ ! -f "Podfile" ]; then
+            pod init  # Opprett Podfile hvis den ikke finnes
+          fi
           pod install
 
       - name: Build iOS app
         script: |
           xcodebuild \
-            -workspace YourApp.xcworkspace \
+            -workspace ios/YourApp.xcworkspace \
             -scheme YourAppScheme \
             -configuration Release \
             -sdk iphoneos \
@@ -40,11 +44,11 @@ workflows:
           xcodebuild \
             -exportArchive \
             -archivePath $CM_BUILD_DIR/YourApp.xcarchive \
-            -exportOptionsPlist ExportOptions.plist \
+            -exportOptionsPlist ios/ExportOptions.plist \
             -exportPath $CM_BUILD_DIR
 
     artifacts:
-      - build/ios/ipa/*.ipa
+      - ios/build/*.ipa  
 
     publishing:
       app_store_connect:
