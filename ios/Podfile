@@ -1,18 +1,7 @@
-# Denne Podfile er for et iOS-prosjekt
-platform :ios, '12.0'  # Sett minimum iOS-versjon
-use_frameworks!  # Bruk dynamiske rammeverk
+platform :ios, '12.0'
+use_frameworks!
 
-# Sett prosjektet ditt her hvis du har en spesifikk prosjektfil
-# project 'path/to/YourProject.xcodeproj' 
-
-# Targeten for prosjektet ditt (dvs. applikasjonen)
 target 'KitchenApp' do
-  # Legg til avhengigheter for prosjektet ditt her
-  pod 'Alamofire', '~> 5.0'  # Eksempel på en pod (kan være en hvilken som helst avhengighet)
-  pod 'Firebase/Analytics'   # Legg til Firebase eller andre nødvendige pods
-
-  # Hvis du bruker flere targets (for eksempel en test target), kan du spesifisere dem også
-  # target 'KitchenAppTests' do
-  #   pod 'Nimble'
-  # end
+  pod 'Alamofire', '~> 5.0'  # Eksempel på en avhengighet, legg til dine egne her
+  # Legg til eventuelle andre pods du trenger
 end
