@@ -1,0 +1,16 @@
+workflows:
+  ios:
+    name: iOS Workflow
+    max_build_duration: 60
+    trigger:
+      events:
+        - push
+        - pull_request
+    build:
+      ios:
+        app_bundle_id: com.company.KitchenApp 
+        ios_simulator: true  
+    publish:
+      build:
+        type: app_store
+        api_key: AIzaSyDNPgh24lOoXZFMu9_QQd5BDCEoSv2c88A 
