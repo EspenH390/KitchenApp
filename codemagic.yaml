@@ -1,48 +1,42 @@
-name: iOS Workflow
-
-on:
-  push:
-    branches:
-      - main  # Trigger only on pushes to the main branch
-
-jobs:
-  build:
-    name: Build iOS App
-    runs-on: macos-latest  # Use a macOS runner for iOS builds
-
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    description: Build and publish iOS app
+    envs:
+      - APP_STORE_API_KEY: $APP_STORE_API_KEY  # Ensure this is set in Bitrise secrets
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Xcode
-        run: |
-          sudo xcode-select --switch /Applications/Xcode_14.2.app  # Specify your Xcode version
-          xcodebuild -version
-
-      - name: Install dependencies
-        run: |
-          brew install cocoapods  # Install CocoaPods if needed
-          pod install
-
-      - name: Build iOS App
-        run: |
-          xcodebuild \
-            -workspace YourApp.xcworkspace \
-            -scheme YourAppScheme \
-            -sdk iphoneos \
-            -configuration Release \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            DEVELOPMENT_TEAM=YOUR_TEAM_ID \
-            PROVISIONING_PROFILE_SPECIFIER="Your_Provisioning_Profile" \
-            clean build
-
-      - name: Publish to App Store
-        env:
-          APP_STORE_API_KEY: ${{ secrets.APP_STORE_API_KEY }}
-        run: |
-          xcodebuild \
-            -exportArchive \
-            -archivePath YourApp.xcarchive \
-            -exportOptionsPlist ExportOptions.plist \
-            -exportPath . \
-            -allowProvisioningUpdates
+      - git-clone: {}
+      - script:
+          title: Set up Xcode
+          inputs:
+            - content: |
+                #!/bin/bash
+                sudo xcode-select --switch /Applications/Xcode_14.2.app
+                xcodebuild -version
+      - script:
+          title: Install dependencies
+          inputs:
+            - content: |
+                #!/bin/bash
+                brew install cocoapods
+                pod install
+      - xcode-build:
+          inputs:
+            - project_path: YourApp.xcworkspace
+            - scheme: YourAppScheme
+            - configuration: Release
+            - sdk: iphoneos
+            - code_sign_identity: "iPhone Distribution"
+            - development_team: YOUR_TEAM_ID
+            - provisioning_profile_specifier: "Your_Provisioning_Profile"
+      - script:
+          title: Publish to App Store
+          inputs:
+            - content: |
+                #!/bin/bash
+                xcodebuild \
+                  -exportArchive \
+                  -archivePath YourApp.xcarchive \
+                  -exportOptionsPlist ExportOptions.plist \
+                  -exportPath . \
+                  -allowProvisioningUpdates
