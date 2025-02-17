@@ -1,17 +1,48 @@
-workflows:
-  ios-workflow:
-    name: iOS Workflow
-    max_build_duration: 60
-    trigger:
-      branches:
-        only:
-          - main  # Bygg kun på push til main-grenen (endre etter behov)
-    build:
-      ios:
-        app_id: 1:959701393192:ios:b9c497d2a3898195acba1d  # Sett inn appens faktiske ID
-        development_team: YOUR_TEAM_ID  # Sett inn ditt team ID
-        provisioning_profile: "path/to/profile"  # Valgfritt, hvis du bruker en spesifikk provisioning profile
-        distribution_certificate: "path/to/certificate"  # Valgfritt, hvis du har et spesifikt sertifikat
-    publish:
-      app_store:
-        api_key: $APP_STORE_API_KEY  # Sørg for at API-nøkkelen er riktig
+name: iOS Workflow
+
+on:
+  push:
+    branches:
+      - main  # Trigger only on pushes to the main branch
+
+jobs:
+  build:
+    name: Build iOS App
+    runs-on: macos-latest  # Use a macOS runner for iOS builds
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Xcode
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_14.2.app  # Specify your Xcode version
+          xcodebuild -version
+
+      - name: Install dependencies
+        run: |
+          brew install cocoapods  # Install CocoaPods if needed
+          pod install
+
+      - name: Build iOS App
+        run: |
+          xcodebuild \
+            -workspace YourApp.xcworkspace \
+            -scheme YourAppScheme \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
+            DEVELOPMENT_TEAM=YOUR_TEAM_ID \
+            PROVISIONING_PROFILE_SPECIFIER="Your_Provisioning_Profile" \
+            clean build
+
+      - name: Publish to App Store
+        env:
+          APP_STORE_API_KEY: ${{ secrets.APP_STORE_API_KEY }}
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath YourApp.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath . \
+            -allowProvisioningUpdates
