@@ -3,14 +3,17 @@ workflows:
     name: iOS Workflow
     max_build_duration: 60
     trigger:
-      # Trigger events must be defined using a list of strings
+      # Dette er måten Codemagic håndterer hendelser på:
       events:
         - push
         - pull_request
     build:
+      # Korrekt struktur for iOS byggeoppsett:
       ios:
-        app_bundle_id: com.example.kitchenapp  # Sett inn ditt faktiske app bundle ID
-        ios_simulator: true
+        app_id: com.example.kitchenapp  # Appens app-id
+        development_team: YOUR_TEAM_ID  # Ditt utviklingsteam-id (hvis nødvendig)
+        simulator: true  # Om du bygger for simulatoren
     publish:
+      # For publisering på App Store
       app_store:
-        api_key: $APP_STORE_API_KEY  # Sørg for at du har riktig API-nøkkel for App Store
+        api_key: $APP_STORE_API_KEY  # Sørg for at du har riktig API-nøkkel
