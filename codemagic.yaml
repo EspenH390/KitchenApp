@@ -1,11 +1,7 @@
 workflows:
   ios:
     name: iOS Workflow
-    trigger:
-      branches:
-        only:
-          - main  # Bygg kun på push til main-grenen
-
+    max_build_duration: 60
     build:
       ios:
         app_id: 1:959701393192:ios:b9c497d2a3898195acba1d  # Sett inn appens faktiske ID
