@@ -4,19 +4,19 @@ workflows:
     max_build_duration: 60  # Øker byggetiden om nødvendig
 
     environment:
-      ruby: 3.1.0  # Bruk en annen versjon som er tilgjengelig
+      ruby: 2.7.6  # Bruker en stabil Ruby-versjon
       vars:
-        APP_STORE_API_KEY: $APP_STORE_API_KEY  
-        APP_STORE_KEY_ID: $APP_STORE_KEY_ID  
-        APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID  
-      xcode: latest  # Bruker den nyeste Xcode-versjonen
+        APP_STORE_API_KEY: $APP_STORE_API_KEY  # Dine App Store API-nøkler
+        APP_STORE_KEY_ID: $APP_STORE_KEY_ID
+        APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID
+      xcode: latest  # Bruker den nyeste versjonen av Xcode
 
     triggering:
       events:
         - push
         - pull_request
       branch_patterns:
-        - pattern: main
+        - pattern: main  # Bygg kun på hovedgrenen
           include: true
           source: true
 
@@ -28,8 +28,8 @@ workflows:
 
           echo "Oppdaterer CocoaPods..."
           gem install cocoapods --user-install
-          export PATH=$HOME/.gem/ruby/3.1.0/bin:$PATH  # Bruker Ruby 3.1.0 her
-          
+          pod setup  # Sørger for at CocoaPods er riktig konfigurert
+
           echo "Kjører pod install..."
           cd ios
           pod install --verbose || { echo 'pod install feilet'; exit 1; }
@@ -62,6 +62,3 @@ workflows:
         api_key: $APP_STORE_API_KEY
         key_id: $APP_STORE_KEY_ID
         issuer_id: $APP_STORE_ISSUER_ID
-
-
-
