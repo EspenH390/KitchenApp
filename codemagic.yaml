@@ -1,31 +1,28 @@
 workflows:
   ios-workflow:
     name: iOS Build Workflow
-    max_build_duration: 60  # Øker byggetiden om nødvendig
+    max_build_duration: 60
 
     environment:
-      ruby: 3.4.2  # Bruker Ruby 3.4.2 eller nyere
+      ruby: 3.1.0  # Bruk Ruby 3.1.0 for stabilitet
       vars:
-        APP_STORE_API_KEY: $APP_STORE_API_KEY  # Dine App Store API-nøkler
+        APP_STORE_API_KEY: $APP_STORE_API_KEY
         APP_STORE_KEY_ID: $APP_STORE_KEY_ID
         APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID
       xcode: latest  # Bruker den nyeste versjonen av Xcode
 
-    triggering:
-      events:
-        - push
-        - pull_request
-      branch_patterns:
-        - pattern: main  # Bygg kun på hovedgrenen
-          include: true
-          source: true
-
     scripts:
-      - name: Install CocoaPods dependencies
+      - name: Install Ruby version 3.1.0
         script: |
-          echo "Sjekker Ruby-versjon..."
+          echo "Sjekker og installerer Ruby 3.1.0..."
+          if ! rbenv versions | grep -q '3.1.0'; then
+            rbenv install 3.1.0 --skip-existing
+          fi
+          rbenv global 3.1.0
           ruby -v
 
+      - name: Install CocoaPods dependencies
+        script: |
           echo "Oppdaterer CocoaPods..."
           gem install cocoapods --user-install
           pod setup  # Sørger for at CocoaPods er riktig konfigurert
