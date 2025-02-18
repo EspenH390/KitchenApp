@@ -4,6 +4,7 @@ workflows:
     max_build_duration: 60
 
     environment:
+      ruby: 3.3.7  # Sikrer at riktig Ruby-versjon brukes
       vars:
         APP_STORE_API_KEY: $APP_STORE_API_KEY
         APP_STORE_KEY_ID: $APP_STORE_KEY_ID
@@ -22,36 +23,40 @@ workflows:
     scripts:
       - name: Install CocoaPods dependencies
         script: |
-          sudo gem install cocoapods
+          echo "Oppdaterer CocoaPods..."
+          gem install cocoapods --user-install
+          export PATH=$HOME/.gem/ruby/3.3.7/bin:$PATH
+
+          echo "Installerer Pods..."
           cd ios
-          if [ ! -f "Podfile" ]; then
-            pod init  # Opprett Podfile hvis den ikke finnes
-          fi
-          pod install
+          pod install --verbose || { echo 'Pod install feilet'; exit 1; }
 
       - name: Build iOS app
         script: |
+          echo "Bygger iOS-appen..."
           xcodebuild \
-            -workspace ios/YourApp.xcworkspace \
-            -scheme YourAppScheme \
+            -workspace ios/KitchenApp.xcworkspace \
+            -scheme KitchenApp \
             -configuration Release \
             -sdk iphoneos \
-            -archivePath $CM_BUILD_DIR/YourApp.xcarchive \
-            archive
+            -archivePath $CM_BUILD_DIR/KitchenApp.xcarchive \
+            archive || { echo 'Build feilet'; exit 1; }
 
       - name: Export .ipa file
         script: |
+          echo "Eksporterer .ipa..."
           xcodebuild \
             -exportArchive \
-            -archivePath $CM_BUILD_DIR/YourApp.xcarchive \
+            -archivePath $CM_BUILD_DIR/KitchenApp.xcarchive \
             -exportOptionsPlist ios/ExportOptions.plist \
-            -exportPath $CM_BUILD_DIR
+            -exportPath $CM_BUILD_DIR || { echo 'Export feilet'; exit 1; }
 
     artifacts:
-      - ios/build/*.ipa  
+      - build/ios/ipa/*.ipa  
 
     publishing:
       app_store_connect:
         api_key: $APP_STORE_API_KEY
         key_id: $APP_STORE_KEY_ID
         issuer_id: $APP_STORE_ISSUER_ID
+
