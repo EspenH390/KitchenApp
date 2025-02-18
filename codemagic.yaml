@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60  # Øker byggetiden om nødvendig
 
     environment:
-      ruby: 3.4.2  # Sikrer at riktig Ruby-versjon brukes
+      ruby: 3.1.0  # Bruk en annen versjon som er tilgjengelig
       vars:
         APP_STORE_API_KEY: $APP_STORE_API_KEY  
         APP_STORE_KEY_ID: $APP_STORE_KEY_ID  
@@ -28,7 +28,7 @@ workflows:
 
           echo "Oppdaterer CocoaPods..."
           gem install cocoapods --user-install
-          export PATH=$HOME/.gem/ruby/3.4.2/bin:$PATH  # Oppdaterer Ruby-versjonen her
+          export PATH=$HOME/.gem/ruby/3.1.0/bin:$PATH  # Bruker Ruby 3.1.0 her
           
           echo "Kjører pod install..."
           cd ios
@@ -62,5 +62,6 @@ workflows:
         api_key: $APP_STORE_API_KEY
         key_id: $APP_STORE_KEY_ID
         issuer_id: $APP_STORE_ISSUER_ID
+
 
 
