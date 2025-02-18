@@ -1,15 +1,15 @@
 workflows:
   ios-workflow:
-    name: iOS Workflow
-    max_build_duration: 60
+    name: iOS Build Workflow
+    max_build_duration: 60  # Øker byggetiden om nødvendig
 
     environment:
-      ruby: 3.3.7  # Sikrer at riktig Ruby-versjon brukes
+      ruby: 3.4.2  # Sikrer at riktig Ruby-versjon brukes
       vars:
-        APP_STORE_API_KEY: $APP_STORE_API_KEY
-        APP_STORE_KEY_ID: $APP_STORE_KEY_ID
-        APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID
-      xcode: latest  
+        APP_STORE_API_KEY: $APP_STORE_API_KEY  
+        APP_STORE_KEY_ID: $APP_STORE_KEY_ID  
+        APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID  
+      xcode: latest  # Bruker den nyeste Xcode-versjonen
 
     triggering:
       events:
@@ -23,13 +23,16 @@ workflows:
     scripts:
       - name: Install CocoaPods dependencies
         script: |
+          echo "Sjekker Ruby-versjon..."
+          ruby -v
+
           echo "Oppdaterer CocoaPods..."
           gem install cocoapods --user-install
-          export PATH=$HOME/.gem/ruby/3.3.7/bin:$PATH
-
-          echo "Installerer Pods..."
+          export PATH=$HOME/.gem/ruby/3.4.2/bin:$PATH  # Oppdaterer Ruby-versjonen her
+          
+          echo "Kjører pod install..."
           cd ios
-          pod install --verbose || { echo 'Pod install feilet'; exit 1; }
+          pod install --verbose || { echo 'pod install feilet'; exit 1; }
 
       - name: Build iOS app
         script: |
@@ -44,7 +47,7 @@ workflows:
 
       - name: Export .ipa file
         script: |
-          echo "Eksporterer .ipa..."
+          echo "Eksporterer IPA..."
           xcodebuild \
             -exportArchive \
             -archivePath $CM_BUILD_DIR/KitchenApp.xcarchive \
@@ -52,11 +55,12 @@ workflows:
             -exportPath $CM_BUILD_DIR || { echo 'Export feilet'; exit 1; }
 
     artifacts:
-      - build/ios/ipa/*.ipa  
+      - build/ios/ipa/*.ipa  # Sørger for at .ipa-filen blir tilgjengelig etter bygging
 
     publishing:
       app_store_connect:
         api_key: $APP_STORE_API_KEY
         key_id: $APP_STORE_KEY_ID
         issuer_id: $APP_STORE_ISSUER_ID
+
 
