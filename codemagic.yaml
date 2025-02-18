@@ -1,58 +1,37 @@
 workflows:
   ios-workflow:
-    name: iOS Build Workflow
-    max_build_duration: 60
-
+    name: iOS Build
+    max_build_duration: 120
     environment:
-      ruby: 3.0.4
+      xcode: 16.2
+      cocoapods: default
+      ruby: 3.1.0
       vars:
         APP_STORE_API_KEY: $APP_STORE_API_KEY
-        APP_STORE_KEY_ID: $APP_STORE_KEY_ID
         APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID
-      xcode: latest
-
+        APP_STORE_KEY_ID: $APP_STORE_KEY_ID
     scripts:
-      - name: Update ruby-build
+      - name: Set up Ruby and CocoaPods
         script: |
-          brew update && brew upgrade ruby-build
-
-      - name: Install Ruby 3.0.4
-        script: |
-          rbenv install 3.0.4 --skip-existing
-          rbenv global 3.0.4
-          ruby -v
-
-      - name: Ensure rbenv is active
-        script: |
-          eval "$(rbenv init -)"
-          rbenv rehash
-          ruby -v
-
-      - name: Install CocoaPods
-        script: |
-          gem install cocoapods --user-install
-          pod --version
-
-      - name: Install CocoaPods dependencies
-        script: |
+          rbenv install --skip-existing 3.1.0
+          rbenv global 3.1.0
+          gem install bundler
+          bundle install
           cd ios
-          pod install --verbose || { echo 'pod install feilet'; exit 1; }
+          pod install
 
       - name: Build iOS app
         script: |
-          xcodebuild \
-            -workspace ios/KitchenApp.xcworkspace \
-            -scheme KitchenApp \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath $CM_BUILD_DIR/KitchenApp.xcarchive \
-            archive || { echo 'Build feilet'; exit 1; }
+          xcode-project use-ios-workspace
+          xcode-project build-ipa --workspace "ios/KitchenApp.xcworkspace" --scheme "KitchenApp"
 
     artifacts:
       - build/ios/ipa/*.ipa
+      - build/ios/archive/*.xcarchive
 
     publishing:
       app_store_connect:
         api_key: $APP_STORE_API_KEY
         key_id: $APP_STORE_KEY_ID
         issuer_id: $APP_STORE_ISSUER_ID
+        submit_to_testflight: true
