@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60  # Øker byggetiden om nødvendig
 
     environment:
-      ruby: 2.7.6  # Bruker en stabil Ruby-versjon
+      ruby: 3.0.4  # Bruker Ruby 3.0.4 eller nyere
       vars:
         APP_STORE_API_KEY: $APP_STORE_API_KEY  # Dine App Store API-nøkler
         APP_STORE_KEY_ID: $APP_STORE_KEY_ID
@@ -62,3 +62,4 @@ workflows:
         api_key: $APP_STORE_API_KEY
         key_id: $APP_STORE_KEY_ID
         issuer_id: $APP_STORE_ISSUER_ID
+
