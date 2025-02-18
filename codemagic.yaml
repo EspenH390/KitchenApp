@@ -4,36 +4,46 @@ workflows:
     max_build_duration: 60
 
     environment:
-      ruby: 3.1.0  # Bruk Ruby 3.1.0 for stabilitet
+      ruby: 3.0.4  # Bytt til en fungerende Ruby-versjon
       vars:
         APP_STORE_API_KEY: $APP_STORE_API_KEY
         APP_STORE_KEY_ID: $APP_STORE_KEY_ID
         APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID
-      xcode: latest  # Bruker den nyeste versjonen av Xcode
+      xcode: latest
 
     scripts:
-      - name: Install Ruby version 3.1.0
+      - name: Update ruby-build
         script: |
-          echo "Sjekker og installerer Ruby 3.1.0..."
-          if ! rbenv versions | grep -q '3.1.0'; then
-            rbenv install 3.1.0 --skip-existing
-          fi
-          rbenv global 3.1.0
+          brew update && brew upgrade ruby-build
+
+      - name: Check available Ruby versions
+        script: |
+          rbenv install --list
+
+      - name: Install Ruby 3.0.4
+        script: |
+          rbenv install 3.0.4 --skip-existing
+          rbenv global 3.0.4
           ruby -v
+
+      - name: Ensure rbenv is active
+        script: |
+          eval "$(rbenv init -)"
+          rbenv rehash
+          ruby -v
+
+      - name: Install CocoaPods
+        script: |
+          gem install cocoapods --user-install
+          pod --version
 
       - name: Install CocoaPods dependencies
         script: |
-          echo "Oppdaterer CocoaPods..."
-          gem install cocoapods --user-install
-          pod setup  # Sørger for at CocoaPods er riktig konfigurert
-
-          echo "Kjører pod install..."
           cd ios
           pod install --verbose || { echo 'pod install feilet'; exit 1; }
 
       - name: Build iOS app
         script: |
-          echo "Bygger iOS-appen..."
           xcodebuild \
             -workspace ios/KitchenApp.xcworkspace \
             -scheme KitchenApp \
@@ -44,7 +54,6 @@ workflows:
 
       - name: Export .ipa file
         script: |
-          echo "Eksporterer IPA..."
           xcodebuild \
             -exportArchive \
             -archivePath $CM_BUILD_DIR/KitchenApp.xcarchive \
@@ -52,7 +61,7 @@ workflows:
             -exportPath $CM_BUILD_DIR || { echo 'Export feilet'; exit 1; }
 
     artifacts:
-      - build/ios/ipa/*.ipa  # Sørger for at .ipa-filen blir tilgjengelig etter bygging
+      - build/ios/ipa/*.ipa
 
     publishing:
       app_store_connect:
