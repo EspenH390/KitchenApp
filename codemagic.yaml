@@ -10,24 +10,25 @@ workflows:
         APP_STORE_API_KEY: $APP_STORE_API_KEY
         APP_STORE_ISSUER_ID: $APP_STORE_ISSUER_ID
         APP_STORE_KEY_ID: $APP_STORE_KEY_ID
+
     scripts:
-      - name: Set up Ruby and CocoaPods
+      - name: Ensure correct Ruby version
         script: |
-          rbenv install --skip-existing 3.1.0
+          if ! rbenv versions | grep -q "3.1.0"; then
+            rbenv install 3.1.0 --skip-existing
+          fi
           rbenv global 3.1.0
+          ruby -v
+
+      - name: Install Bundler & dependencies
+        script: |
           gem install bundler
           bundle install
-          cd ios
-          pod repo update
-          pod install --verbose
-      
-      - name: Verify CocoaPods installation
+
+      - name: Install CocoaPods dependencies
         script: |
           cd ios
-          if [ ! -f "KitchenApp.xcworkspace" ]; then
-            echo "❌ ERROR: KitchenApp.xcworkspace not found after pod install"
-            exit 1
-          fi
+          pod install --repo-update
 
       - name: Build iOS app
         script: |
