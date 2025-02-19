@@ -18,7 +18,16 @@ workflows:
           gem install bundler
           bundle install
           cd ios
-          pod install
+          pod repo update
+          pod install --verbose
+      
+      - name: Verify CocoaPods installation
+        script: |
+          cd ios
+          if [ ! -f "KitchenApp.xcworkspace" ]; then
+            echo "❌ ERROR: KitchenApp.xcworkspace not found after pod install"
+            exit 1
+          fi
 
       - name: Build iOS app
         script: |
@@ -35,3 +44,4 @@ workflows:
         key_id: $APP_STORE_KEY_ID
         issuer_id: $APP_STORE_ISSUER_ID
         submit_to_testflight: true
+
